@@ -62,7 +62,7 @@ router = APIRouter(prefix='/uploads', tags=['uploads'])
 
 
 @router.get('/options')
-def simple_options(user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+def simple_options(user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     from ..config import settings
     categories = list(db.scalars(select(Category).where(catalog_category_filter(), Category.active.is_(True))
                                 .order_by(catalog_category_order())))
@@ -73,7 +73,7 @@ def simple_options(user=Depends(require_roles('admin', 'user')), db: Session = D
 @router.get('/label')
 def simple_label(category_id: str, batch_token: str = Query(min_length=8, max_length=120),
                  format_id: str | None = None,
-                 user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+                 user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     category = db.get(Category, category_id)
     if not is_catalog_category(category) or not category.active:
         raise HTTPException(422, '分类不存在或已停用')
@@ -88,7 +88,7 @@ def simple_label(category_id: str, batch_token: str = Query(min_length=8, max_le
 
 
 @router.post('/simple-preview')
-def simple_preview(payload: SimpleUploadInput, user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+def simple_preview(payload: SimpleUploadInput, user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     return prepare_simple_upload(db, user, payload)[0]
 
 
@@ -131,7 +131,7 @@ def lock_catalog_for_upload(db, category_id):
 
 
 @router.post('/simple-submit')
-def simple_submit(payload: SimpleSubmitInput, user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+def simple_submit(payload: SimpleSubmitInput, user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     db.scalar(select(User).where(User.id == user.id).with_for_update(key_share=True))
     request_values = payload.model_dump(exclude={'idempotency_key', 'configuration_revision'})
     # New optional fields must not invalidate retries of older persisted requests.
@@ -220,12 +220,12 @@ def simple_submit(payload: SimpleSubmitInput, user=Depends(require_roles('admin'
 
 
 @router.post('/preview')
-def preview(payload: UploadInput, user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+def preview(payload: UploadInput, user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     return prepare_upload(db, user, payload)[0]
 
 
 @router.post('/submit')
-def submit(payload: SubmitInput, user=Depends(require_roles('admin', 'user')), db: Session = Depends(get_db)):
+def submit(payload: SubmitInput, user=Depends(require_roles('superadmin', 'admin', 'user')), db: Session = Depends(get_db)):
     # Per-owner transaction lock serializes concurrent dedup and idempotency checks.
     db.scalar(select(User).where(User.id == user.id).with_for_update(key_share=True))
     request_hash = fingerprint(json.dumps(payload.model_dump(exclude={'idempotency_key'}), sort_keys=True, ensure_ascii=False))

@@ -130,7 +130,26 @@ def test_local_rbac_channel_tasks_and_reveal(db, login, setup_catalog):
     parent = login('admin')
     assert parent.post('/api/channels/' + channel_id + '/reveal').json()['key'] == 'placeholder-key-alpha'
     assert 'placeholder-key-alpha' not in parent.get('/api/channels').text
-    assert login('root').post('/api/uploads/submit', json=payload(setup_catalog)).status_code == 403
+
+
+def test_superadmin_standard_upload_preserves_own_identity(db, login, setup_catalog, users):
+    body = payload(setup_catalog)
+    user_result = login('user').post('/api/uploads/submit', json=body).json()
+    root = login('root')
+    preview = root.post('/api/uploads/preview', json={k: v for k, v in body.items() if k != 'idempotency_key'})
+    assert preview.status_code == 200 and preview.json()['can_submit'], preview.text
+    response = root.post('/api/uploads/submit', json=body)
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result['id'] != user_result['id']
+    assert root.post('/api/uploads/submit', json=body).json()['id'] == result['id']
+    task = db.get(Task, result['id'])
+    channel = db.get(Channel, result['items'][0]['channel_id'])
+    assert task.actor_id == task.owner_id == channel.owner_id == users['root'].id
+    assert db.get(UploadGroup, task.group_id).owner_id == users['root'].id
+    assert channel.id != user_result['items'][0]['channel_id']
+    assert login('user').get('/api/channels/' + channel.id).status_code == 404
+    assert 'placeholder-key-alpha' not in response.text
 
 
 def test_retry_only_failed_and_keeps_submission_idempotency(db, login, setup_catalog):

@@ -1,8 +1,9 @@
 import type { User } from './core';
 
-export type RestrictedSection = 'announcements' | 'tasks' | 'audit';
+export type RestrictedSection = 'upload' | 'announcements' | 'tasks' | 'audit';
 
 export const sectionRoles: Record<RestrictedSection, readonly User['role'][]> = {
+  upload: ['superadmin', 'admin', 'user'],
   announcements: ['superadmin'],
   tasks: ['superadmin', 'user'],
   audit: ['superadmin'],

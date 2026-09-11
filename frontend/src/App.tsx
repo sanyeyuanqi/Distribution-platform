@@ -63,7 +63,7 @@ const menu = [
     roles: ['superadmin', 'admin', 'user'],
   },
   { path: '/', icon: LayoutDashboard, zh: '控制台', en: 'Overview', roles: ['superadmin', 'admin', 'user'] },
-  { path: '/upload', icon: Upload, zh: '上传密钥', en: 'Upload keys', roles: ['admin', 'user'] },
+  { path: '/upload', icon: Upload, zh: '上传密钥', en: 'Upload keys', roles: sectionRoles.upload },
   { path: '/users', icon: Users, zh: '子账号管理', en: 'Subaccounts', roles: ['superadmin', 'admin'] },
   { path: '/sites', icon: Globe2, zh: '站点管理', en: 'Sites', roles: ['superadmin'] },
   {
@@ -305,7 +305,7 @@ export default function App() {
         <Route path="bills" element={<Navigate to="/settlements" replace />} />
         <Route path="settlements" element={<SettlementOrders />} />
         <Route path="settlement-orders" element={<SettlementHistoryRedirect />} />
-        <Route element={<Guard roles={['admin', 'user']} />}>
+        <Route element={<Guard roles={sectionRoles.upload} />}>
           <Route path="upload" element={<SimpleUpload />} />
           <Route path="upload/advanced" element={<Navigate to="/upload" replace />} />
         </Route>

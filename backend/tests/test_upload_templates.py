@@ -80,11 +80,77 @@ def test_only_superadmin_can_manage_templates(login, catalog, role):
     assert client.delete('/api/upload-templates/missing').status_code == 403
 
 
-def test_superadmin_cannot_simple_upload(login, catalog):
+def test_superadmin_simple_upload_owns_channels_and_executes(db, login, catalog, users, monkeypatch):
     root = login('root')
-    assert root.get('/api/uploads/options').status_code == 403
-    assert root.post('/api/uploads/simple-preview', json=upload(catalog)).status_code == 403
-    assert root.post('/api/uploads/simple-submit', json=upload(catalog, idempotency_key='root-no-upload')).status_code == 403
+    add_templates(root, catalog, count=1)
+    options = root.get('/api/uploads/options')
+    assert options.status_code == 200, options.text
+    assert options.json()['total'] == 1
+    params = {'category_id': catalog[0].id, 'format_id': catalog[1].id, 'batch_token': 'root-upload-batch'}
+    label = root.get('/api/uploads/label', params=params)
+    assert label.status_code == 200, label.text
+    preview = root.post('/api/uploads/simple-preview', json=upload(catalog, batch_token=params['batch_token']))
+    assert preview.status_code == 200 and preview.json()['can_submit'], preview.text
+    assert preview.json()['group_tag'] == label.json()['group_tag']
+    result = submit(root, catalog, batch_token=params['batch_token'])
+    assert submit(root, catalog, batch_token=params['batch_token'])['id'] == result['id']
+    task = db.get(Task, result['id'])
+    item = db.get(TaskItem, result['items'][0]['id'])
+    channel = db.get(Channel, item.channel_id)
+    assert task.actor_id == task.owner_id == channel.owner_id == users['root'].id
+    assert db.get(UploadGroup, task.group_id).owner_id == users['root'].id
+    assert 'test-credential-alpha' not in json.dumps(result)
+    for role in ('admin', 'user'):
+        assert login(role).get('/api/channels/' + channel.id).status_code == 404
+        assert login(role).post('/api/channels/' + channel.id + '/reveal').status_code == 404
+    sent = {}
+
+    class MockAdapter:
+        def __init__(self, site, before_write):
+            self.before_write = before_write
+
+        def find_unique_name(self, name):
+            return None
+
+        def create(self, **values):
+            self.before_write()
+            sent.update(values)
+            return '77'
+
+        def detail(self, remote_id):
+            return {'id': 77, 'name': sent['name'], 'type': 1, 'status': 2,
+                    'models': ','.join(sent['models']), 'group': sent['group']}
+
+    monkeypatch.setattr(worker, 'get_adapter', MockAdapter)
+    worker.execute_item(db, item)
+    assert sent['key'] == 'test-credential-alpha'
+    dist = db.get(Distribution, item.distribution_id)
+    assert dist.remote_id == '77' and dist.status == 'disabled'
+    assert db.get(Channel, item.channel_id).owner_id == users['root'].id
+
+
+def test_revoked_superadmin_upload_stops_before_remote_write(db, login, catalog, users, monkeypatch):
+    root = login('root')
+    add_templates(root, catalog, count=1)
+    result = submit(root, catalog)
+    item = db.get(TaskItem, result['items'][0]['id'])
+    users['root'].session_version += 1
+    db.commit()
+    monkeypatch.setattr(worker, 'get_adapter', lambda *args, **kwargs: pytest.fail('Revoked actor reached adapter'))
+    with pytest.raises(worker.WriteStopped, match='会话权限已撤销'):
+        worker.execute_item(db, item)
+    assert not item.remote_write_attempted
+
+
+@pytest.mark.parametrize('endpoint', ['options', 'label', 'simple-preview', 'simple-submit', 'preview', 'submit'])
+def test_upload_requires_login(client, catalog, endpoint):
+    if endpoint in ('options', 'label'):
+        response = client.get('/api/uploads/' + endpoint, params={
+            'category_id': catalog[0].id, 'batch_token': 'anonymous-upload-batch'})
+    else:
+        response = client.post('/api/uploads/' + endpoint, json=upload(catalog,
+            format_id=catalog[1].id, models=['model-a'], idempotency_key='anonymous-upload'))
+    assert response.status_code == 401
 
 
 def test_template_crud_drafts_version_and_unique(login, catalog):
@@ -1375,9 +1441,10 @@ def test_simple_upload_rejects_non_boolean_inventory_or_untrusted_batch_inputs(l
     assert login('user').post('/api/uploads/simple-preview', json=upload(catalog, **invalid)).status_code == 422
 
 
+@pytest.mark.parametrize('role', ['root', 'user'])
 @pytest.mark.parametrize('endpoint', ['simple-preview', 'simple-submit'])
-def test_upload_label_cannot_be_supplied_by_client(db, login, catalog, endpoint):
-    client = login('user')
+def test_upload_label_cannot_be_supplied_by_client(db, login, catalog, endpoint, role):
+    client = login(role)
     body = upload(catalog, batch_token='server-generated-label-check')
     if endpoint == 'simple-submit':
         body['idempotency_key'] = 'server-generated-label-submit'
@@ -1394,10 +1461,12 @@ def test_batch_label_is_authorized_scoped_stable_and_bounded(db, login, client, 
     add_templates(login('root'), catalog, count=1)
     params = {'category_id': catalog[0].id, 'batch_token': 'label-only-batch-token'}
     assert client.get('/api/uploads/label', params=params).status_code == 401
-    assert login('root').get('/api/uploads/label', params=params).status_code == 403
+    root_label = login('root').get('/api/uploads/label', params=params)
+    assert root_label.status_code == 200
     user_client = login('user')
     first = user_client.get('/api/uploads/label', params=params)
     assert first.status_code == 200, first.text
+    assert first.json()['group_tag'] != root_label.json()['group_tag']
     assert first.json() == user_client.get('/api/uploads/label', params=params).json()
     assert first.json()['group_tag'] != login('admin').get('/api/uploads/label', params=params).json()['group_tag']
     category = Category(id=uid(), name='Anthropic', family='Anthropic', active=True)

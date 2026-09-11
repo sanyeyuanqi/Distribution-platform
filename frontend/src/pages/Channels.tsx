@@ -2451,7 +2451,7 @@ export function Channels() {
         'One local channel, multiple remote distributions. Ownership and usage history stay connected.',
       )}
       actions={
-        user?.role !== 'superadmin' && (
+        canAccessSection(user?.role, 'upload') && (
           <Link className="button" to="/upload">
             <Plus size={16} />
             {t('上传密钥', 'Upload keys')}

@@ -19,15 +19,18 @@ from .models_channels import (
     TaskItem,
     UnclaimedChannel,
 )
+from .site_remote_identity import remote_identity_lock_key, same_deployment_site_ids
 
 KIND = 'force_delete_async'
 OPERATION = 'remote_cleanup'
 
 
 def lock_target(db, site_id, remote_id):
-    """The same transaction fence is used by cleanup and manual adoption."""
-    key = int.from_bytes(hashlib.sha256(f'keyacross:remote-cleanup:{site_id}:{remote_id}'.encode()).digest()[:8],
-                         'big', signed=True)
+    """Cleanup and binding share a fence across historical registrations."""
+    site = db.get(Site, site_id)
+    if not site:
+        raise HTTPException(404, '站点不存在')
+    key = remote_identity_lock_key(site, 'keyacross:remote-cleanup', remote_id)
     if not db.scalar(select(func.pg_try_advisory_xact_lock(key))):
         raise HTTPException(409, '远端目标正在处理，请稍后重试')
 
@@ -41,7 +44,8 @@ def lock_request(db, actor_id, nonce):
 def is_reserved(db, site_id, remote_id):
     # Failed or cancelled cleanups remain explicit deletion intentions. A retry
     # must not erase a new adoption made while their worker was unavailable.
-    return db.scalar(select(TaskItem.id).where(TaskItem.site_id == site_id, TaskItem.operation == OPERATION,
+    return db.scalar(select(TaskItem.id).where(TaskItem.site_id.in_(same_deployment_site_ids(site_id)),
+        TaskItem.operation == OPERATION,
         TaskItem.snapshot['delete_target']['id'].as_string() == str(remote_id),
         TaskItem.snapshot['delete_acknowledged'].as_boolean().is_not(True)).limit(1)) is not None
 
@@ -189,8 +193,9 @@ def assert_cleanup(db, task, item):
 
 def assert_unclaimed_target(db, site_id, remote_id):
     """Called under the target lock again immediately before transport."""
-    if (db.scalar(select(Distribution.id).where(Distribution.site_id == site_id, Distribution.remote_id == remote_id).limit(1))
-            or db.scalar(select(UnclaimedChannel.id).where(UnclaimedChannel.site_id == site_id,
+    site_ids = same_deployment_site_ids(site_id)
+    if (db.scalar(select(Distribution.id).where(Distribution.site_id.in_(site_ids), Distribution.remote_id == remote_id).limit(1))
+            or db.scalar(select(UnclaimedChannel.id).where(UnclaimedChannel.site_id.in_(site_ids),
                 UnclaimedChannel.remote_id == remote_id, UnclaimedChannel.adopted_channel_id.is_not(None)).limit(1))):
         raise RemoteError('此远端渠道已有新的本地归属，已停止清理，请人工核实', unknown=True)
 

@@ -151,6 +151,14 @@ def save(db):
         raise HTTPException(409, 'Site prefix or address already exists') from exc
 
 
+def flush_site(db):
+    try:
+        db.flush()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(409, 'Site prefix or address already exists') from exc
+
+
 @router.get('')
 def sites(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     query = select(Site).where(Site.archived.is_(False))
@@ -172,11 +180,7 @@ def create_site(body: SiteCreate, user: User = Depends(require_roles('superadmin
     row = Site(**values, base_url=normalize_url(body.base_url), token_encrypted=encrypt(body.token), token_hint=mask(body.token), enabled=False)
     success = verify_site(row)
     db.add(row)
-    try:
-        db.flush()
-    except IntegrityError as exc:
-        db.rollback()
-        raise HTTPException(409, 'Site prefix or address already exists') from exc
+    flush_site(db)
     templates = create_site_templates(db, row, user)
     row.enabled = bool(body.enabled and success and distribution_readiness(db, row)['distribution_ready'])
     audit(db, user, 'site.create', 'site', row.id,
@@ -219,7 +223,7 @@ def update_site(site_id: str, body: SitePatch, user: User = Depends(require_role
         success = verify_site(row) and verification_state(row)[0] == 'verified'
     else:
         success = verified
-    db.flush()
+    flush_site(db)
     row.enabled = bool(wanted_enabled and success and distribution_readiness(db, row)['distribution_ready'])
     audit(db, user, 'site.update', 'site', row.id, {'fields': sorted(body.model_fields_set), 'enabled': row.enabled})
     save(db)

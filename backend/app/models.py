@@ -9,10 +9,12 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Identity,
+    Index,
     Integer,
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -44,12 +46,16 @@ class Site(Base):
     __table_args__ = (
         CheckConstraint('display_id > 0', name='ck_site_display_id_positive'),
         UniqueConstraint('display_id', name='uq_sites_display_id'),
+        Index('uq_sites_active_prefix', 'prefix', unique=True,
+              postgresql_where=text('archived = false'), sqlite_where=text('archived = false')),
+        Index('uq_sites_active_base_url', 'base_url', unique=True,
+              postgresql_where=text('archived = false'), sqlite_where=text('archived = false')),
     )
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     display_id: Mapped[int] = mapped_column(BigInteger, Identity(always=True, start=1, minvalue=1, cycle=False))
     name: Mapped[str] = mapped_column(String(120))
-    prefix: Mapped[str] = mapped_column(String(32), unique=True)
-    base_url: Mapped[str] = mapped_column(String(1000), unique=True)
+    prefix: Mapped[str] = mapped_column(String(32))
+    base_url: Mapped[str] = mapped_column(String(1000))
     adapter: Mapped[str] = mapped_column(String(80), default='silicon-v1')
     routing_group: Mapped[str] = mapped_column(String(160), default='default')
     seller_user_id: Mapped[str] = mapped_column(String(32))

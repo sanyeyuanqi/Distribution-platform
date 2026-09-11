@@ -49,6 +49,7 @@ from .models_channels import (
 from .newapi_formats import credential_wire_schema, format_spec, protocol_schema
 from .remote_channel_status import remote_channel_state
 from .security import decrypt, fingerprint
+from .site_remote_identity import same_deployment_site_ids
 from .upload_templates import intersect_template_models, template_config
 
 log = logging.getLogger('keyacross.worker')
@@ -261,6 +262,10 @@ def record_remote(db, dist, remote, key_version=None):
         lock_target(db, dist.site_id, str(remote['id']))
         if is_reserved(db, dist.site_id, str(remote['id'])):
             raise WriteStopped('此远端渠道正在等待清理，不能关联到新的本地渠道')
+        if db.scalar(select(Distribution.id).where(
+                Distribution.site_id.in_(same_deployment_site_ids(dist.site_id)),
+                Distribution.remote_id == str(remote['id']), Distribution.id != dist.id).limit(1)):
+            raise WriteStopped('此远端渠道已有同一部署的历史本地关联，不能重复关联')
     dist.remote_id = str(remote['id'])
     dist.remote_name = str(remote.get('name', dist.remote_name))[:160]
     dist.models = [m for m in str(remote.get('models', '')).split(',') if m]
@@ -656,7 +661,8 @@ def sync_site(db, adapter, task, item, actor, site):
             dist.status, dist.error = 'missing', '卖家列表中未找到；可能删除或权限改变，历史数据已保留'
     if item.snapshot.get('discover') and actor.role == 'superadmin':
         from .remote_cleanup import is_reserved, lock_target
-        linked = set(db.scalars(select(Distribution.remote_id).where(Distribution.site_id == site.id, Distribution.remote_id.is_not(None))))
+        linked = set(db.scalars(select(Distribution.remote_id).where(
+            Distribution.site_id.in_(same_deployment_site_ids(site.id)), Distribution.remote_id.is_not(None))))
         for remote_id, remote in by_id.items():
             if remote_id in linked:
                 continue

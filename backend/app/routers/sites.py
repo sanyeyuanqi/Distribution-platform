@@ -15,6 +15,7 @@ from ..models import Site, User
 from ..network import validate_remote_url
 from ..security import encrypt, mask
 from ..site_distribution import distribution_readiness, stop_unready_distribution
+from ..site_templates import create_site_templates
 from ..site_verification import (
     connection_check_result,
     safe_diagnostic,
@@ -176,8 +177,10 @@ def create_site(body: SiteCreate, user: User = Depends(require_roles('superadmin
     except IntegrityError as exc:
         db.rollback()
         raise HTTPException(409, 'Site prefix or address already exists') from exc
+    templates = create_site_templates(db, row, user)
     row.enabled = bool(body.enabled and success and distribution_readiness(db, row)['distribution_ready'])
-    audit(db, user, 'site.create', 'site', row.id, {'verified': success, 'enabled': row.enabled})
+    audit(db, user, 'site.create', 'site', row.id,
+          {'verified': success, 'enabled': row.enabled, 'created_template_count': len(templates)})
     save(db)
     return site_json(row)
 

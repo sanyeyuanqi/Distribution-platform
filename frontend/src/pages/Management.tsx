@@ -482,17 +482,6 @@ export function Sites() {
           : t('SpaceX 上传需用户子账号系统令牌。', 'SpaceX uploads require a user sub-account system token.'),
     },
     {
-      name: 'routing_group',
-      label: t('默认渠道分组', 'Default channel group'),
-      type: edit?.template_options?.groups?.length ? 'select' : 'text',
-      value: '',
-      options: edit?.template_options?.groups?.map((group: string) => ({ value: group, label: group })),
-      hint: t(
-        '可选，仅用于未指定模板分组的渠道。分类模板使用各自配置的分组，不要求 default。',
-        'Optional fallback for channels without a template group. Templates use their own groups; default is not required.',
-      ),
-    },
-    {
       name: 'seller_user_id',
       label: 'New-Api-User',
       required: true,
@@ -532,16 +521,6 @@ export function Sites() {
       label: t('启用定时采集', 'Enable scheduled collection'),
       type: 'checkbox',
       value: true,
-    },
-    {
-      name: 'stats_config',
-      label: t('统计契约配置（JSON）', 'Statistics contract (JSON)'),
-      type: 'json',
-      value: {},
-      hint: t(
-        '未实现的统计契约显示未支持；不要填写未经验证的换算比例',
-        'Unsupported contracts remain unsupported; use verified conversion rules only',
-      ),
     },
   ];
   return (
@@ -756,16 +735,23 @@ export function Sites() {
       {edit && (
         <RecordForm
           title={edit.id ? t('编辑站点', 'Edit site') : t('添加站点', 'Add site')}
-          fields={fields}
+          fields={edit.id ? fields : fields.filter((field) => field.name !== 'enabled')}
+          description={
+            !edit.id && (
+              <Notice>
+                {t(
+                  '创建后自动生成对应的分发模板，默认停用。请在“分发模板”中配置后启用。',
+                  'Distribution templates are created automatically and remain disabled. Configure and enable them in Distribution templates.',
+                )}
+              </Notice>
+            )
+          }
           initial={edit}
           onClose={() => setEdit(null)}
           onSave={async (v) => {
-            const payload: Row = {
-              ...v,
-              stats_config: typeof v.stats_config === 'string' ? JSON.parse(v.stats_config) : v.stats_config,
-            };
+            const payload: Row = { ...v };
+            if (!edit.id) payload.routing_group = 'default';
             if (!payload.token) delete payload.token;
-            if (!payload.routing_group?.trim()) delete payload.routing_group;
             const result = await api<Site>(
               `/sites${edit.id ? `/${edit.id}` : ''}`,
               edit.id ? 'PATCH' : 'POST',
@@ -775,6 +761,10 @@ export function Sites() {
             if (payload.enabled && !result.enabled) {
               showDistributionFailure(result);
               notify(t('站点已保存，分发未启用', 'Site saved. Distribution remains disabled.'));
+            } else if (!edit.id) {
+              notify(
+                t('站点已创建，分发模板已生成并停用', 'Site created with disabled distribution templates.'),
+              );
             } else {
               notify(t('站点已保存', 'Site saved.'));
             }

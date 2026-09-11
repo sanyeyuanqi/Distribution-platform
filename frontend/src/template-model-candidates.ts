@@ -1,5 +1,6 @@
 import type { Row } from './core';
-import { categoryFamily } from './catalog';
+import { categoryFamily } from './catalog.ts';
+import { claudeDisplayModels } from './claude-models.ts';
 
 // User-selected OpenAI catalog, deduplicated by exact model ID (2026-09-10).
 const openAIModels = [
@@ -80,7 +81,7 @@ function uploadModelType(family: string, format: Row | undefined, variant: strin
   return '';
 }
 
-/** OpenAI services use the curated list; other services reuse configured models. */
+/** Editor suggestions are available before any site or template is configured. */
 export function templateModelCandidates({
   category,
   format,
@@ -101,7 +102,13 @@ export function templateModelCandidates({
   const selectedType = uploadModelType(family, format, variant);
   if (family === 'OpenAI' || (family === 'Azure' && selectedType === 'azure_gpt'))
     return [...new Set(openAIModels)];
-  return templates.flatMap((template) => {
+  const claudeService =
+    (family === 'AWS' && ['bedrock', 'aws_claude'].includes(selectedType)) ||
+    (family === 'Azure' && selectedType === 'azure_claude') ||
+    (family === 'Google' && selectedType === 'vertex_claude') ||
+    (['Anthropic', 'OpenCode'].includes(family) && selectedType === 'api_key:14') ||
+    (family === 'OpenRouter' && selectedType === 'api_key:20');
+  const configuredModels = templates.flatMap((template) => {
     if (template.category_id !== category.id) return [];
     const site = sites.find((item) => item.id === template.site_id);
     if (!site || site.archived) return [];
@@ -111,4 +118,5 @@ export function templateModelCandidates({
       selectedType && sourceType ? selectedType === sourceType : template.format_id === format.id;
     return matches && Array.isArray(template.models) ? template.models : [];
   });
+  return [...new Set([...(claudeService ? claudeDisplayModels : []), ...configuredModels])];
 }

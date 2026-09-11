@@ -147,17 +147,24 @@ def test_one_bad_enabled_template_blocks_even_when_another_is_valid_but_disabled
     assert result['enabled'] and result['enabled_template_count'] == 1
 
 
-def test_new_site_and_zero_enabled_templates_cannot_enable_even_after_successful_verify(login, db, ready_site):
+@pytest.mark.parametrize('template_state', ['absent', 'disabled'])
+def test_site_without_enabled_templates_can_be_enabled_after_successful_verify(login, db, ready_site, template_state):
     root = login('root')
-    ready_site.template.enabled = False
+    if template_state == 'absent':
+        db.delete(ready_site.template)
+    else:
+        ready_site.template.enabled = False
     db.commit()
+    before = site_response(root, ready_site.site.id)
+    assert before['enabled'] is False and before['distribution_ready'] is True
+    assert before['distribution_issues'] == [] and before['enabled_template_count'] == 0
     result = root.patch('/api/sites/' + ready_site.site.id, json={'enabled': True}).json()
-    assert not result['enabled'] and result['enabled_template_count'] == 0
-    assert result['distribution_issues'] == ['请先配置并启用至少一个分发模板']
-    new = root.post('/api/sites', json={'name': 'New site', 'prefix': 'NEW', 'base_url': 'https://new.invalid',
-        'seller_user_id': '71', 'token': 'fixture-token', 'enabled': True, 'adapter': 'new-api-v1'})
-    assert new.status_code == 201 and new.json()['verified_at'] and not new.json()['enabled']
-    assert new.json()['enabled_template_count'] == 0
+    assert result['enabled'] is True and result['distribution_ready'] is True
+    assert result['distribution_issues'] == [] and result['enabled_template_count'] == 0
+    assert ready_site.calls == ['read-only verify']
+    if template_state == 'disabled':
+        db.refresh(ready_site.template)
+        assert ready_site.template.enabled is False
 
 
 def test_disabled_site_can_configure_enabled_template_before_explicit_site_enable(login, db, ready_site):
@@ -176,7 +183,7 @@ def test_disabled_site_can_configure_enabled_template_before_explicit_site_enabl
 
 
 @pytest.mark.parametrize('change', ['disable', 'delete'])
-def test_removing_last_enabled_template_stops_site_and_repair_does_not_auto_enable(login, db, ready_site, change):
+def test_removing_last_enabled_template_keeps_site_enabled(login, db, ready_site, change):
     case = ready_site
     case.site.enabled = True
     db.commit()
@@ -185,13 +192,13 @@ def test_removing_last_enabled_template_stops_site_and_repair_does_not_auto_enab
     response = root.patch(path, json={'enabled': False}) if change == 'disable' else root.delete(path)
     assert response.status_code == 200
     result = site_response(root, case.site.id)
-    assert not result['enabled'] and not result['distribution_ready']
-    assert result['enabled_template_count'] == 0
+    assert result['enabled'] is True and result['distribution_ready'] is True
+    assert result['distribution_issues'] == [] and result['enabled_template_count'] == 0
     if change == 'disable':
         assert root.patch(path, json={'enabled': True}).status_code == 200
         result = site_response(root, case.site.id)
-        assert result['distribution_ready'] and not result['enabled']
-    assert db.scalar(select(AuditEvent.id).where(AuditEvent.action == 'site.distribution.stop'))
+        assert result['distribution_ready'] is True and result['enabled'] is True
+    assert db.scalar(select(AuditEvent.id).where(AuditEvent.action == 'site.distribution.stop')) is None
 
 
 @pytest.mark.parametrize('change', ['permission', 'group', 'connection'])
@@ -261,4 +268,4 @@ def test_template_disable_and_site_enable_serialize_without_reverse_lock_order(d
         disabling.result(timeout=15)
     db.expire_all()
     assert not db.get(SiteUploadTemplate, template_id).enabled
-    assert not db.get(Site, site_id).enabled
+    assert db.get(Site, site_id).enabled

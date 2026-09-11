@@ -91,10 +91,11 @@ def test_template_crud_drafts_version_and_unique(login, catalog):
     root = login('root')
     draft = root.post('/api/upload-templates', json=template_body(catalog, enabled=False, models=[])).json()
     assert not draft['ready'] and draft['version'] == 1
+    assert '站点已停用或归档' not in draft['issues']
     assert root.patch('/api/upload-templates/' + draft['id'], json={'enabled': True}).status_code == 422
     saved = root.patch('/api/upload-templates/' + draft['id'], json={'models': ['model-a'], 'enabled': True}).json()
-    assert saved['enabled'] and not saved['ready'] and saved['version'] == 2
-    assert saved['issues'] == ['站点已停用或归档']  # Repairing a draft does not restart the site's distribution switch.
+    assert saved['enabled'] and saved['ready'] and saved['version'] == 2
+    assert saved['issues'] == []
     assert root.patch('/api/upload-templates/' + draft['id'], json={'enabled': True}).json()['version'] == 2
     assert root.post('/api/upload-templates', json=template_body(catalog)).status_code == 409
     assert root.get('/api/upload-templates', params={'site_id': catalog[2][0].id}).json()['total'] == 1
@@ -147,7 +148,7 @@ def test_delete_template_preserves_channels_settlements_and_task_history(db, log
     db.expire_all()
     assert db.get(SiteUploadTemplate, saved['id']) is None
     assert [persisted_values(row) for row in records] == before
-    assert not db.get(Site, saved['site_id']).enabled
+    assert db.get(Site, saved['site_id']).enabled
     events = list(db.scalars(select(AuditEvent).where(AuditEvent.action == 'upload_template.delete')))
     assert len(events) == 1 and events[0].object_id == saved['id']
     assert root.delete('/api/upload-templates/' + saved['id']).status_code == 404
@@ -1081,7 +1082,7 @@ def test_deleted_template_still_allows_unknown_write_readonly_reconciliation(db,
     response = root.delete('/api/upload-templates/' + item.snapshot['upload_template_id'])
     assert response.status_code == 200, response.text
     db.expire_all()
-    assert not db.get(Site, item.site_id).enabled
+    assert db.get(Site, item.site_id).enabled
 
     class MockAdapter:
         def __init__(self, *args, **kwargs):

@@ -14,18 +14,7 @@ import type { Row } from '../core';
 import { AccountInfoFields, accountError, emptyAccountInfo } from './UploadConfiguration';
 import './upload-advanced-options.css';
 import { sortModelsByReleaseDate } from '../model-release-order';
-
-const claudeDisplayModels = [
-  'claude-haiku-4-5-20251001',
-  'claude-opus-4-6',
-  'claude-opus-4-7',
-  'claude-opus-4-8',
-  'claude-sonnet-5',
-  'claude-fable-5',
-  'claude-opus-5',
-  'claude-sonnet-4-6',
-  'claude-fable-5-1',
-];
+import { claudeDisplayModels } from '../claude-models';
 
 export function uploadModelChoices(models: string[]): string[] {
   const supplied = new Set(models);

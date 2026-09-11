@@ -508,12 +508,12 @@ export function Sites() {
     },
     {
       name: 'enabled',
-      label: t('分发检查通过后启用', 'Enable after distribution checks pass'),
+      label: t('启用站点分发', 'Enable site distribution'),
       type: 'checkbox',
       value: false,
       hint: t(
-        '连接与创建权限正常，且至少有一个已启用模板、所有已启用模板配置通过检查后才可启用。',
-        'Requires a verified connection, channel creation permission and at least one enabled template. All enabled templates must pass configuration checks.',
+        '连接与创建权限通过验证后可启用，模板可稍后配置。已启用模板仍需通过配置检查。',
+        'Requires a verified connection and channel creation permission. Templates can be configured later; enabled templates must pass configuration checks.',
       ),
     },
     {

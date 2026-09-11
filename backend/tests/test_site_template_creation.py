@@ -80,7 +80,8 @@ def test_creating_site_generates_all_catalog_variants_as_linked_disabled_drafts(
         db, login, users, catalog, requested_enabled, mock_site_api):
     root = login('root')
     result = create(root, enabled=requested_enabled)
-    assert result['enabled'] is False and result['distribution_ready'] is False
+    assert result['enabled'] is requested_enabled and result['distribution_ready'] is True
+    assert result['distribution_issues'] == []
     assert result['enabled_template_count'] == 0
     rows = template_rows(db, result['id'])
     assert len(rows) == 11
@@ -116,6 +117,7 @@ def test_failed_site_verification_still_saves_disabled_local_drafts(db, login, c
     mock_site_api.failed = True
     result = create(login('root'), enabled=True)
     assert result['enabled'] is False and result['verified_at'] is None
+    assert result['distribution_ready'] is False
     assert result['verification_error'] is not None
     rows = template_rows(db, result['id'])
     assert len(rows) == 11 and all(not row.enabled and row.models == [] for row in rows)

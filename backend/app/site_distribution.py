@@ -32,8 +32,6 @@ def distribution_readiness(db, site):
             .where(SiteUploadTemplate.site_id == site.id, SiteUploadTemplate.enabled.is_(True))
             .order_by(SiteUploadTemplate.created_at, SiteUploadTemplate.id)
             .execution_options(populate_existing=True)).all()
-    if not rows:
-        issues.append('请先配置并启用至少一个分发模板')
     for template, category, fmt in rows:
         try:
             problems = template_issues(template, site, category, fmt, include_availability=False)

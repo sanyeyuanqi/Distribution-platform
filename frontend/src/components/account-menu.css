@@ -1,0 +1,45 @@
+.account-menu-popover {
+  z-index: 80;
+  width: 184px;
+  max-width: calc(100vw - 24px);
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #e9edf2;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px #1822361a;
+}
+.account-menu-popover > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px;
+  color: #374151;
+  border-radius: 7px;
+  font-size: 13px;
+  text-align: left;
+}
+.account-menu-popover > button svg {
+  flex-shrink: 0;
+}
+.account-menu-popover > button:hover,
+.account-menu-popover > button:focus-visible {
+  background: #f3f5f8;
+}
+.account-menu-popover > button:focus-visible {
+  outline: 2px solid #93baff;
+  outline-offset: -2px;
+}
+.account-menu-divider {
+  height: 1px;
+  margin: 5px 8px;
+  background: #edf0f4;
+}
+.account-menu-popover > .account-menu-signout {
+  color: #dc4e59;
+}
+.account-menu-popover > .account-menu-signout:hover,
+.account-menu-popover > .account-menu-signout:focus-visible {
+  background: #fff2f3;
+}

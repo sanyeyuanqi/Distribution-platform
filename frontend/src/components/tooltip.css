@@ -1,0 +1,68 @@
+.app-tooltip {
+  z-index: 1000;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 24px));
+  border: 1px solid #d6e4f7;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  box-shadow:
+    0 8px 28px #16355b1c,
+    0 2px 6px #16355b0a;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.65;
+  text-align: left;
+  pointer-events: auto;
+  user-select: text;
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+  animation: tooltip-appear 120ms ease-out;
+}
+.app-tooltip-body {
+  max-height: min(320px, calc(var(--radix-tooltip-content-available-height, 320px) - 2px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.app-tooltip-mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  font-size: 11px;
+}
+.app-tooltip-arrow {
+  fill: #fff;
+  filter: drop-shadow(0 1px 0 #d6e4f7);
+}
+.tooltip-disabled-trigger {
+  display: inline-flex;
+  min-width: 0;
+  vertical-align: middle;
+  border-radius: 7px;
+  cursor: not-allowed;
+}
+.tooltip-disabled-trigger > :disabled {
+  pointer-events: none;
+}
+.tooltip-text-trigger:focus-visible,
+.tooltip-disabled-trigger:focus-visible {
+  outline: 2px solid #77a9f7;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-tooltip {
+    animation: none;
+  }
+}

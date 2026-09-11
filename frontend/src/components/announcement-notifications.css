@@ -1,0 +1,70 @@
+.announcement-reminder .modal {
+  width: 650px;
+  max-height: min(800px, calc(100dvh - 36px));
+}
+.announcement-reminder .modal-heading h2,
+.announcement-reminder-content h3,
+.announcement-reminder .prose-text {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.announcement-reminder-content h3 {
+  margin: 0 0 10px;
+  color: #263448;
+  font-size: 19px;
+  line-height: 1.5;
+}
+.announcement-reminder-date {
+  margin: 0 0 18px;
+  color: #8693a5;
+  font-size: 12px;
+}
+.announcement-reminder .prose-text {
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+.announcement-reminder .modal-footer {
+  flex-wrap: wrap;
+}
+.announcement-reminder-day {
+  color: #8693a5;
+  font-size: 11px;
+}
+.announcement-reminder-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  font-size: 12px;
+  color: #64748b;
+}
+.announcement-reminder .modal-footer .actions {
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.announcement-reminder-error {
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid #efbdc3;
+  border-radius: 8px;
+  background: #fff4f4;
+  color: #b34150;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .announcement-reminder .modal {
+    max-height: calc(100dvh - 20px);
+  }
+  .announcement-reminder .modal-heading,
+  .announcement-reminder .modal-body,
+  .announcement-reminder .modal-footer {
+    padding: 16px;
+  }
+  .announcement-reminder .modal-footer {
+    gap: 10px;
+  }
+  .announcement-reminder-day {
+    width: 100%;
+  }
+}

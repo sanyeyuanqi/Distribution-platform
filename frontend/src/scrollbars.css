@@ -1,0 +1,88 @@
+:root {
+  --scrollbar-size: 10px;
+  --scrollbar-track: #f4f7fc;
+  --scrollbar-thumb: #b6c7df;
+  --scrollbar-thumb-hover: #8ba8cf;
+  --scrollbar-thumb-active: #5a91d9;
+}
+
+/* Standard fallback for engines without WebKit scrollbar pseudo-elements. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+@supports selector(::-webkit-scrollbar) {
+  /* Chromium's standard properties otherwise override the custom track and thumb. */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  *::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    min-width: 32px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--scrollbar-thumb);
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-active);
+  }
+
+  *::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  textarea::-webkit-resizer {
+    background: linear-gradient(
+      135deg,
+      transparent 45%,
+      var(--scrollbar-thumb) 45% 52%,
+      transparent 52% 65%,
+      var(--scrollbar-thumb) 65% 72%,
+      transparent 72%
+    );
+  }
+}
+
+@media (pointer: coarse) {
+  :root {
+    --scrollbar-size: 8px;
+  }
+}
+
+/* Keep system contrast colors available to users who request them. */
+@media (forced-colors: active) {
+  :root,
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+    --scrollbar-track: Canvas;
+    --scrollbar-thumb: ButtonText;
+    --scrollbar-thumb-hover: Highlight;
+    --scrollbar-thumb-active: Highlight;
+  }
+}

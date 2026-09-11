@@ -1,0 +1,70 @@
+name: ${COMPOSE_PROJECT_NAME:-keyacross}
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: keyacross
+      POSTGRES_USER: keyacross
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/setup.py first}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U keyacross -d keyacross']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, 'yes', --requirepass, '${REDIS_PASSWORD:?Run scripts/setup.py first}']
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://keyacross:${POSTGRES_PASSWORD}@postgres:5432/keyacross
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      ATTACHMENT_DIR: /data/attachments
+    command: [sh, -c, 'alembic upgrade head && python -m app.bootstrap && uvicorn app.main:app --host 0.0.0.0 --port 8000']
+    volumes:
+      - attachments:/data/attachments
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, 'import urllib.request; urllib.request.urlopen("http://localhost:8000/api/health")']
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+  worker:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://keyacross:${POSTGRES_PASSWORD}@postgres:5432/keyacross
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      ATTACHMENT_DIR: /data/attachments
+    command: [python, -m, app.worker]
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+  web:
+    build: ./frontend
+    ports:
+      - '127.0.0.1:8080:80'
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+volumes:
+  postgres_data:
+  redis_data:
+  attachments:

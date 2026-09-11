@@ -1,0 +1,48 @@
+# Merge with compose.yaml. Keep credentials in the server's private .env.
+name: distribute
+
+x-logging: &bounded-logs
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    container_name: distribute-postgres
+    logging: *bounded-logs
+  redis:
+    container_name: distribute-redis
+    logging: *bounded-logs
+  api:
+    container_name: distribute-api
+    image: distribute-api:latest
+    environment:
+      COOKIE_SECURE: "true"
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set the exact HTTPS origin in .env}
+    command:
+      [
+        sh,
+        -c,
+        "alembic upgrade head && python -m app.bootstrap && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*",
+      ]
+    logging: *bounded-logs
+  worker:
+    container_name: distribute-worker
+    image: distribute-api:latest
+    environment:
+      COOKIE_SECURE: "true"
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set the exact HTTPS origin in .env}
+    logging: *bounded-logs
+  web:
+    container_name: distribute-web
+    image: distribute-web:latest
+    networks:
+      - default
+      - proxy
+    logging: *bounded-logs
+
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK:?Set the existing reverse proxy Docker network in .env}

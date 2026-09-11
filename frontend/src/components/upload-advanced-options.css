@@ -1,0 +1,405 @@
+.upload-advanced-options .modal.wide {
+  width: min(860px, 100%);
+}
+
+.upload-advanced-options .modal-body {
+  padding: 20px 24px;
+}
+
+.upload-advanced-options .upload-advanced-content {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.upload-advanced-options h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #24334d;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.upload-advanced-options .upload-advanced-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.upload-advanced-options .upload-advanced-section-heading p,
+.upload-advanced-options .upload-advanced-account-body > p {
+  margin: 5px 0 0;
+  color: #8290a7;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-count {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #f1f6ff;
+  color: #5484ce;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-model-notice {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #e1eafa;
+  border-radius: 8px;
+  color: #647eaa;
+  background: #f5f8ff;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-model-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 12px;
+  padding: 10px 13px;
+  border: 1px solid #dce6f3;
+  border-radius: 9px;
+  background: #fff;
+  color: #8c9db8;
+}
+
+.upload-advanced-options .upload-advanced-model-search:focus-within {
+  border-color: #8ebaff;
+  box-shadow: 0 0 0 3px #eff5ff;
+}
+
+.upload-advanced-options .upload-advanced-model-search > svg {
+  flex-shrink: 0;
+}
+
+.upload-advanced-options .upload-advanced-model-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  outline: none;
+  background: transparent;
+  color: #405574;
+  font-size: 12px;
+}
+
+.upload-advanced-options .upload-advanced-model-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.upload-advanced-options .upload-advanced-model-search button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 2px;
+  color: #8290a7;
+}
+
+.upload-advanced-options .upload-advanced-model-picker {
+  overflow: hidden;
+  border: 1px solid #e3eaf4;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.upload-advanced-options .upload-advanced-model-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #edf1f7;
+  background: #f8faff;
+}
+
+.upload-advanced-options .upload-advanced-model-select-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #405574;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.upload-advanced-options .upload-advanced-model-match-count {
+  color: #8c9ab0;
+  font-size: 11px;
+}
+
+.upload-advanced-options .upload-advanced-models {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 70px;
+  max-height: 236px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+}
+
+.upload-advanced-options .upload-advanced-models[data-short-list='true'] {
+  max-height: none;
+}
+
+.upload-advanced-options .upload-advanced-model {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+  min-width: 0;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  color: #526783;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.upload-advanced-options .upload-advanced-model > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.upload-advanced-options .upload-advanced-model.is-selected {
+  background: #f4f8ff;
+  color: #405d86;
+}
+
+.upload-advanced-options .upload-advanced-model:hover {
+  background: #eaf2ff;
+}
+
+.upload-advanced-options .upload-advanced-model input,
+.upload-advanced-options .upload-advanced-model-select-all input {
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #4389e9;
+  cursor: pointer;
+}
+
+.upload-advanced-options .upload-advanced-model-select-all input:indeterminate {
+  border-color: #4389e9;
+  background: #4389e9;
+}
+
+.upload-advanced-options .upload-advanced-model-select-all input:indeterminate::before {
+  content: '';
+  width: 7px;
+  height: 2px;
+  border: 0;
+  border-radius: 1px;
+  background: #fff;
+  transform: none;
+}
+
+.upload-advanced-options .upload-advanced-model-filter-hint {
+  margin: 8px 0 0;
+  color: #8d9cb0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-empty {
+  margin: 8px 0;
+  color: #8290a7;
+  font-size: 12px;
+}
+
+.upload-advanced-options .upload-advanced-inventory {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dfeafb;
+  border-radius: 9px;
+  background: #f6f9ff;
+  cursor: pointer;
+}
+
+.upload-advanced-options .upload-advanced-inventory > input {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: #4389e9;
+}
+
+.upload-advanced-options .upload-advanced-inventory-copy {
+  min-width: 0;
+}
+
+.upload-advanced-options .upload-advanced-inventory strong {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: #354d73;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.upload-advanced-options .upload-advanced-inventory small {
+  display: block;
+  margin-top: 5px;
+  color: #8393ac;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-account {
+  border: 1px solid #e3eaf4;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.upload-advanced-options .upload-advanced-account-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 14px;
+  border: 0;
+  background: #fff;
+  color: #52647f;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.upload-advanced-options .upload-advanced-account-toggle > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.upload-advanced-options .upload-advanced-account-toggle > svg {
+  flex-shrink: 0;
+  transition: transform 140ms;
+}
+
+.upload-advanced-options .upload-advanced-account-toggle > svg.is-open {
+  transform: rotate(180deg);
+}
+
+.upload-advanced-options .upload-advanced-account-body {
+  padding: 0 14px 14px;
+}
+
+.upload-advanced-options .upload-advanced-account-body > p {
+  margin: 0 0 13px;
+}
+
+.upload-advanced-options .account-info-fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.upload-advanced-options .upload-advanced-text-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.upload-advanced-options .upload-advanced-text-fields section {
+  min-width: 0;
+}
+
+.upload-advanced-options .upload-advanced-text-fields h3 {
+  margin-bottom: 11px;
+}
+
+.upload-advanced-options .field {
+  min-width: 0;
+  margin: 0;
+}
+
+.upload-advanced-options .field > span {
+  color: #7d8da6;
+  font-size: 11px;
+}
+
+.upload-advanced-options textarea {
+  min-height: 105px;
+  padding: 10px 11px;
+  border-color: #dfe7f3;
+  border-radius: 8px;
+  color: #405574;
+  font-size: 12px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.upload-advanced-options textarea::placeholder {
+  color: #a0adc0;
+  opacity: 1;
+}
+
+.upload-advanced-options .field > small {
+  color: #8d9cb0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #fed8db;
+  border-radius: 7px;
+  background: #fff6f6;
+  color: #cc4c58;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.upload-advanced-options .upload-advanced-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+  width: 100%;
+}
+
+.upload-advanced-options button:focus-visible,
+.upload-advanced-options .upload-advanced-model input:focus-visible,
+.upload-advanced-options .upload-advanced-model-select-all input:focus-visible,
+.upload-advanced-options .upload-advanced-inventory input:focus-visible {
+  outline: 2px solid #609bed;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .upload-advanced-options .modal-body {
+    padding: 17px;
+  }
+
+  .upload-advanced-options .upload-advanced-content {
+    gap: 17px;
+  }
+
+  .upload-advanced-options .upload-advanced-text-fields,
+  .upload-advanced-options .account-info-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .upload-advanced-options .upload-advanced-models {
+    max-height: 195px;
+  }
+}

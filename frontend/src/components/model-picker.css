@@ -1,0 +1,215 @@
+.model-picker {
+  min-width: 0;
+}
+.model-picker-toolbar,
+.model-picker-tools,
+.model-picker-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.model-picker-toolbar {
+  flex-wrap: wrap;
+}
+.model-picker-search {
+  display: flex;
+  flex: 1 1 220px;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid #dce5f1;
+  border-radius: 8px;
+  color: #8293ac;
+}
+.model-picker-search:focus-within {
+  border-color: #80adf6;
+  box-shadow: 0 0 0 3px #3b82f612;
+}
+.model-picker-search input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+}
+.model-picker-search input:focus {
+  box-shadow: none;
+  outline: none;
+}
+.model-picker-tools {
+  flex-wrap: wrap;
+}
+.model-picker-tools button {
+  white-space: nowrap;
+}
+.model-picker-count {
+  justify-content: space-between;
+  margin: 12px 0 8px;
+  font-size: 12px;
+  color: #8293ac;
+}
+.model-picker-count strong {
+  color: #347df0;
+  font-weight: 500;
+}
+.model-picker-order-hint {
+  margin: 0 0 8px;
+  color: #8293ac;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.model-picker-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
+  align-content: start;
+  gap: 8px;
+  height: 240px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 10px;
+  border: 1px solid #e4eaf3;
+  border-radius: 9px;
+  background: #fbfcfe;
+}
+.model-picker-option {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 9px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e0e7f1;
+  border-radius: 7px;
+  background: #fff;
+}
+.model-picker-choice {
+  display: flex;
+  align-items: start;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  cursor: pointer;
+}
+.model-picker-option-heading {
+  display: flex;
+  align-items: start;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+}
+.model-picker-option-heading .model-picker-choice {
+  flex: 1;
+}
+.model-picker-remove {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  margin: -3px -3px 0 0;
+}
+.model-picker-mapping-target {
+  color: #7387a6;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.model-picker-mapping-target span {
+  font-family: Consolas, 'SFMono-Regular', monospace;
+}
+.model-picker-option[data-selected] {
+  color: #246deb;
+  border-color: #b7d1ff;
+  background: #f1f6ff;
+}
+.model-picker-option:focus-within {
+  outline: 2px solid #84b3ff;
+  outline-offset: 1px;
+}
+.model-picker-option:has(input:disabled) {
+  cursor: default;
+  opacity: 0.65;
+}
+.model-picker-choice input[type='checkbox'] {
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  margin: 2px 0 0;
+}
+.model-picker-choice span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font:
+    12px / 1.6 Consolas,
+    'SFMono-Regular',
+    monospace;
+}
+.model-picker-demands {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.model-picker-demand:only-child {
+  grid-column: 1 / -1;
+}
+.model-picker-demand {
+  width: 100%;
+  min-width: 0;
+  color: #566b89;
+}
+.model-picker-demand label,
+.model-picker-demand small {
+  display: block;
+  margin: 0 0 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.model-picker-demand input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+  background: #fff;
+}
+.model-picker-demand input[aria-invalid='true'] {
+  border-color: #ef4444;
+}
+.model-picker-demand small {
+  margin: 5px 0 0;
+}
+.model-picker-demand-hint {
+  margin: 0 0 9px;
+  color: #8293ac;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.model-picker-empty {
+  grid-column: 1 / -1;
+  color: #8293ac;
+  padding: 12px;
+  font-size: 12px;
+}
+.model-picker-status {
+  font-size: 12px;
+  color: #8293ac;
+  overflow-wrap: anywhere;
+}
+.model-picker-status p {
+  margin: 8px 0 0;
+}
+@media (max-width: 600px) {
+  .model-picker-toolbar {
+    align-items: stretch;
+    gap: 10px;
+  }
+  .model-picker-search {
+    flex-basis: 100%;
+  }
+  .model-picker-tools {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .model-picker-options {
+    height: 230px;
+    padding: 7px;
+  }
+}

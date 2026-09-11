@@ -1,0 +1,82 @@
+.modal.wide.settlement-groups-modal {
+  width: 1600px;
+}
+
+.settlement-groups-modal .table-scroll table {
+  min-width: 1080px;
+}
+
+.settlement-groups-modal .table-scroll tbody tr.settlement-group-settled > td {
+  background: #edf8f2;
+  border-bottom-color: #dbeee2;
+}
+
+.settlement-groups-modal .table-scroll tbody tr.settlement-group-settled:hover > td {
+  background: #e2f2e9;
+}
+
+.settlement-groups-modal .table-scroll .settlement-group-tag {
+  min-width: 220px;
+  max-width: 290px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.settlement-groups-modal .table-scroll .settlement-amount {
+  text-align: right;
+}
+
+.settlement-payee {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+  min-width: 0;
+  max-width: 360px;
+  text-align: right;
+}
+
+.settlement-payee-label {
+  color: var(--text-secondary, #8796ae);
+  white-space: nowrap;
+}
+
+.settlement-payee strong {
+  overflow-wrap: anywhere;
+}
+
+.settlement-footer-summary {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  min-width: 0;
+  flex: 1;
+}
+
+.settlement-payment-total {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.settlement-payment-total strong {
+  color: var(--primary, #3b82f6);
+}
+
+.settlement-payment-total small {
+  margin-left: 6px;
+  color: var(--text-secondary, #8796ae);
+}
+
+.settlement-group-toolbar {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .settlement-payee {
+    max-width: 100%;
+  }
+}

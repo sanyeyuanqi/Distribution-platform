@@ -1,0 +1,64 @@
+.pull-to-refresh {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+.pull-to-refresh:focus-visible {
+  outline: 2px solid #8ab5f3;
+  outline-offset: -2px;
+}
+.pull-to-refresh-indicator {
+  display: none;
+  flex: 0 0 auto;
+  overflow: hidden;
+  color: #597294;
+  background: #f8fbff;
+  pointer-events: none;
+  user-select: none;
+}
+.pull-to-refresh-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 36px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.pull-to-refresh-status svg {
+  flex-shrink: 0;
+  color: #4988df;
+  transition: transform 120ms ease-out;
+}
+.pull-to-refresh[data-pull-state='ready'] .pull-to-refresh-status svg {
+  transform: rotate(180deg);
+}
+.pull-to-refresh[data-pull-state='refreshing'] .pull-to-refresh-status svg {
+  animation: pull-refresh-spin 800ms linear infinite;
+}
+@keyframes pull-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 760px) {
+  .pull-to-refresh {
+    overscroll-behavior-y: contain;
+  }
+  .pull-to-refresh-indicator {
+    display: block;
+  }
+  .pull-to-refresh[data-pull-state='idle'] .pull-to-refresh-indicator,
+  .pull-to-refresh[data-pull-state='refreshing'] .pull-to-refresh-indicator {
+    transition: height 160ms ease-out;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pull-to-refresh-indicator,
+  .pull-to-refresh-status svg {
+    transition: none !important;
+    animation: none !important;
+  }
+}

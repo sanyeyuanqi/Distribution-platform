@@ -1,0 +1,52 @@
+.channel-distribution-table {
+  min-width: 0;
+  max-width: 100%;
+}
+.channel-distribution-table .table-scroll {
+  overflow: auto;
+}
+.channel-distribution-table table {
+  min-width: 1640px;
+  table-layout: fixed;
+}
+.channel-distribution-table th,
+.channel-distribution-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.channel-distribution-table .distribution-id-cell {
+  width: 80px;
+}
+.channel-distribution-table .distribution-tag-cell {
+  width: 210px;
+}
+.channel-distribution-table .distribution-category-cell,
+.channel-distribution-table .distribution-date-cell {
+  width: 145px;
+}
+.channel-distribution-table .distribution-site-cell,
+.channel-distribution-table .distribution-owner-cell {
+  width: 115px;
+}
+.channel-distribution-table .distribution-name-cell {
+  width: 195px;
+}
+.channel-distribution-table .distribution-count-cell {
+  width: 80px;
+}
+.channel-distribution-table .distribution-upload-cell,
+.channel-distribution-table .distribution-actions-cell {
+  width: 110px;
+}
+.channel-distribution-table .distribution-status-cell {
+  width: 135px;
+}
+.channel-distribution-table .distribution-amount-cell {
+  width: 180px;
+}
+@media (max-width: 680px) {
+  .channel-view-switch button {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

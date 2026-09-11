@@ -1,0 +1,101 @@
+.settings-page-shell.main-shell {
+  height: calc(100dvh - 2 * var(--shell-gap));
+  min-height: 0;
+}
+.settings-page-shell > .topbar {
+  flex-shrink: 0;
+}
+.settings-page-shell > .page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.system-settings-toolbar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.system-settings-toolbar > .actions {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.system-settings-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.system-settings-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #63748e;
+  font-size: 13px;
+}
+.system-settings-links a:hover {
+  background: #f5f8fd;
+  color: var(--primary-dark);
+}
+.system-settings-links a.active {
+  border-color: #c9dcff;
+  background: #eff5ff;
+  color: var(--primary-dark);
+}
+.system-settings-panel.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.system-settings-panel > .panel-toolbar,
+.system-settings-panel > .table-footer {
+  flex-shrink: 0;
+}
+.system-settings-panel > .table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.system-settings-panel > .table-scroll:focus-visible {
+  outline: 2px solid #84b3ff;
+  outline-offset: -2px;
+}
+.system-settings-panel > .table-scroll th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  box-shadow: 0 1px 0 var(--border);
+}
+.system-settings-panel > .state-block {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+@media (max-width: 480px) {
+  .system-settings-toolbar {
+    gap: 10px;
+  }
+  .system-settings-links {
+    gap: 4px;
+  }
+  .system-settings-links a {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+}

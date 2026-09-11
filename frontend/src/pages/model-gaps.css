@@ -23,60 +23,19 @@
 }
 .model-gaps-number {
   width: 25%;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .model-gap-amount {
   min-width: 0;
-}
-.model-gap-amount summary {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 7px;
-  cursor: pointer;
-  list-style: none;
-}
-.model-gap-amount summary::-webkit-details-marker {
-  display: none;
-}
-.model-gap-amount summary > svg {
-  color: #8293ac;
-  flex-shrink: 0;
-}
-.model-gap-amount[open] summary > svg {
-  transform: rotate(180deg);
 }
 .model-gap-value {
   color: #347df0;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
-}
-.model-gap-breakdown {
-  margin-top: 10px;
-  padding: 9px;
-  border-radius: 6px;
-  background: #f7f9fc;
-  font-size: 12px;
-  line-height: 1.65;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  color: #7387a6;
-}
-.model-gap-breakdown dl {
-  margin: 0;
-}
-.model-gap-breakdown dl > div {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 4px 8px;
-}
-.model-gap-breakdown dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-}
-.model-gap-breakdown p {
-  margin: 7px 0 0;
 }
 .model-gaps-empty {
   text-align: center;

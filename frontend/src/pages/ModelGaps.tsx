@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { DataState, datetime, items, Page, Refresh, Table, useApp, useData } from '../core';
 import type { Row } from '../core';
 import './model-gaps.css';
@@ -25,50 +24,12 @@ function GapAmount({ row, unit }: { row: Row; unit: 'RPM' | 'TPM' }) {
   const suffix = unit.toLowerCase();
   const required = row[`required_${suffix}`];
   const gap = row[`gap_${suffix}`];
-  const unknown = row[`unknown_${suffix}_channels`];
   const unset = required === null || required === undefined;
   return (
-    <details className="model-gap-amount">
-      <summary aria-label={`${row.model} ${unit} ${t('计算明细', 'breakdown')}`}>
-        <span className="model-gap-value">{integerText(gap)}</span>
-        {unset && <small className="muted">{t('未设置', 'Not set')}</small>}
-        <ChevronDown size={13} aria-hidden="true" />
-      </summary>
-      <div className="model-gap-breakdown">
-        <dl>
-          <div>
-            <dt>{t('需求合计', 'Total demand')}</dt>
-            <dd>
-              {integerText(required)} {unit}
-            </dd>
-          </div>
-          <div>
-            <dt>{t('已申报总量', 'Declared total')}</dt>
-            <dd>
-              {integerText(row[`supplied_${suffix}`])} {unit}
-            </dd>
-          </div>
-        </dl>
-        {unset ? (
-          <p>{t('此模型尚未设置此项需求。', 'No demand is configured for this unit.')}</p>
-        ) : (
-          <p>
-            {t(
-              '缺口为需求合计减去已申报总量，最低为 0。',
-              'The gap is total demand minus the declared total, with a minimum of 0.',
-            )}
-          </p>
-        )}
-        {integerValue(unknown) !== null && BigInt(integerValue(unknown)!) > 0n && (
-          <p>
-            {t(
-              `部分渠道未填写配额，按已知总量计算。${integerText(unknown)} 个渠道未填写 ${unit}。`,
-              `Some channels have no quota declared; calculations use known totals. ${integerText(unknown)} channels have no ${unit} declaration.`,
-            )}
-          </p>
-        )}
-      </div>
-    </details>
+    <span className="model-gap-amount">
+      <span className="model-gap-value">{integerText(gap)}</span>
+      {unset && <small className="muted">{t('未设置', 'Not set')}</small>}
+    </span>
   );
 }
 

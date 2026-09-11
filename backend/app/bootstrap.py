@@ -150,16 +150,20 @@ def bootstrap():
         return initialize(db)
 
 
-if __name__ == '__main__':
+def main():
     # Schema is supplied by migrations. Never create/drop production tables here.
-    if settings.bootstrap_username and settings.bootstrap_password:
+    # Existing installations must start after one-time credentials are removed.
+    # initialize() still rejects an unprovisioned database without credentials.
+    if (settings.bootstrap_username and settings.bootstrap_password) or not sys.stdin.isatty():
         bootstrap()
-    elif sys.stdin.isatty():
+    else:
         name = input('初始超级管理员用户名：').strip()
         password = getpass.getpass(f'密码（至少 {PASSWORD_MIN_LENGTH} 位）：')
         if password != getpass.getpass('确认密码：'):
             raise SystemExit('两次输入的密码不一致')
         with SessionLocal() as db:
             initialize(db, name, password)
-    else:
-        raise SystemExit('Use a terminal or set BOOTSTRAP_USERNAME and BOOTSTRAP_PASSWORD')
+
+
+if __name__ == '__main__':
+    main()
